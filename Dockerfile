@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+RUN npx prisma generate
 RUN npm run build
 
 # Stage 2: Production image
@@ -12,12 +13,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --production
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
 
-# Use environment variable for production
 ENV NODE_ENV=production
-
-# Expose container port (app should use process.env.PORT)
 EXPOSE 3333
-
 CMD ["node", "dist/main.js"]
