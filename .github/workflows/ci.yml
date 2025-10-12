@@ -7,6 +7,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      PORT: ${{ secrets.PORT }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -19,15 +23,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        run: npx prisma generate
+
       - name: Run tests
-        run: npm run test  # optional: add your tests
+        run: npm run test
 
       - name: Build Docker image
         run: docker build -t nest-prisma-app .
 
-      - name: Push & Deploy to Render
+      - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          curl -X POST https://api.render.com/deploy/srv-xxxxxxxx \
+          curl -X POST https://api.render.com/deploy/srv-d3lo758gjchc73cit0o0 \
           -H "Authorization: Bearer $RENDER_API_KEY"
