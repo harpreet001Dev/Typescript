@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: nest-web
+    ports:
+      - "3333:3333"  # Map container port to host
+    environment:
+      DATABASE_URL: postgresql://postgres:123@db:5432/nest?schema=public
+      NODE_ENV: development
+      PORT: 3333
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev   # live reload for dev
+
+  db:
+    image: postgres:15-alpine
+    container_name: nest-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
