@@ -18,4 +18,9 @@ export class AuthController {
         return this.authService.signin(body);
     }
 
+    @Get('test')
+    test() {
+        return "This is a test route";
+    }
+
 }
